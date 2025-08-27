@@ -4,8 +4,9 @@
 - [Martin Matta](https://github.com/Arzaknim)
 - [Barbora Kubalcová](https://github.com/BarboraKubalcova)
 
-### AI asistent pre popisovanie galaxii
+<img width="1104" height="522" alt="image" src="https://github.com/user-attachments/assets/06a59086-c56f-4b07-a989-9458a80577bc" />
 
+### AI asistent pre popisovanie galaxii
 
 ## App Setup:
 - Je potrebne prepisat v `appsettings.json` variable `OpenAIKey` na vlastny kluc z OpenAI
