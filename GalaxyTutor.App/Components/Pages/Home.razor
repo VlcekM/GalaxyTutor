@@ -18,7 +18,7 @@
 </style>
 
 <div class="flex flex-col items-center justify-center h-full w-full">
-	<span class="flex flex-row items-center gap-3">
+	<span class="flex flex-row items-center gap-3 mt-5">
 		<div class="p-1 rounded-lg" style="background-color: #151515;">
 			<LucideIcon Name="telescope" Size="32" Stroke="white"/>
 		</div>
@@ -79,9 +79,9 @@
 	}
 	<div class="@classString">
 
-		<div class="h-[1px] w-[350px] my-4 bg-gray-200"></div>
+		@* <div class="h-[1px] w-[350px] my-4 bg-gray-200"></div> *@
 
-		<div class="max-w-200">
+		<div class="max-w-200 border-t border-gray-200 mt-5 pt-3">
 			@if (Loading)
 			{
 				<div class="flex flex-row gap-1 items-center" style="opacity: 50%">
@@ -122,18 +122,18 @@
 		var fileName = Path.GetFileName(file.Name);
 
 		// Get the configured base storage path and prepare the temp subfolder
-		var tempDirectory = @"C:\Temp";
-
-		if (!Directory.Exists(tempDirectory))
-		{
-			Directory.CreateDirectory(tempDirectory);
-		}
+		// var tempDirectory = @"C:\Temp";
+		//
+		// if (!Directory.Exists(tempDirectory))
+		// {
+		// 	Directory.CreateDirectory(tempDirectory);
+		// }
 
 		// Generate a unique temp file name
 		var tempFileName = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
 
 		// Full path to the temp file
-		ImageFileName = Path.Combine(tempDirectory, tempFileName);
+		ImageFileName = Path.Combine(Path.GetTempPath(), tempFileName);
 
 		try
 		{

@@ -1,0 +1,6 @@
+﻿<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Publish GalaxyTutor.App (self contained)" type="DotNetFolderPublish" factoryName="Publish to folder">
+    <riderPublish configuration="Release" platform="Any CPU" runtime="win-x64" self_contained="true" target_folder="$PROJECT_DIR$/../../GalaxyTutorBuild" target_framework="net9.0" uuid_high="-9019587544965821182" uuid_low="-4723962680018126669" />
+    <method v="2" />
+  </configuration>
+</component>
