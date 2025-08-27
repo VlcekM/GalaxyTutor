@@ -1,0 +1,191 @@
+﻿@page "/"
+@using InfiniLore.Lucide
+@using MudBlazor.Utilities
+@using OpenAI.Chat
+@inject IConfiguration Configuration
+@inject HttpClient Http
+
+<PageTitle>Home</PageTitle>
+
+<style>
+	.response-div {
+		transition: opacity 1s ease-in-out;
+	}
+
+	.invisible-response {
+		opacity: 0;
+	}
+</style>
+
+<div class="flex flex-col items-center justify-center h-full w-full">
+	<span class="flex flex-row items-center gap-3">
+		<div class="p-1 rounded-lg" style="background-color: #151515;">
+			<LucideIcon Name="telescope" Size="32" Stroke="white"/>
+		</div>
+		<h1 class="mb-0 text-4xl font-medium">
+			GalaxyTutor
+		</h1>
+	</span>
+	<p class="mt-2 text-gray-500 text-lg">Tvoj sprievodca galaxiami</p>
+
+	<div class="h-[1px] w-[250px] mt-5 mb-4 bg-gray-200"></div>
+
+	<MudFileUpload T="IBrowserFile" FilesChanged="@UploadFiles">
+		<ActivatorContent>
+			<MudButton>
+				<div class="flex flex-row items-center gap-1">
+					<LucideIcon Name="image-plus" Size="20"/>
+					<p>
+						Uploadni obrázok galaxie
+					</p>
+				</div>
+			</MudButton>
+		</ActivatorContent>
+	</MudFileUpload>
+
+	<span class="flex flex-row gap-2 items-center mt-3 ">
+			
+		@if (ImageDataURL is not null)
+		{
+			<img src="@ImageDataURL" class="pa-1 mb-2 rounded-2xl border border-gray-200 shadow" style="max-height: 80px;"/>
+			<LucideIcon Name="link-2"/>
+		}
+
+
+		<input type="text" style="min-width: 500px; border: 1px solid #ccc;"
+		       @bind="@Prompt"
+		       class="py-2 pl-3 rounded-full border shadow-xs"
+		       placeholder="Opýtaj sa ma na čokoľvek o tvojej galaxii"/>
+
+
+		@if (Loading)
+		{
+			<span class="loader ml-2"></span>
+		}
+		else
+		{
+			<button style="width:36px; height:36px;" class="send-button rounded-full" @onclick="SendPromptAsync"
+			        disabled="@Loading">
+				<LucideIcon Name="send" Stroke="white" Size="20" Class="mx-1.5!"/>
+			</button>
+		}
+
+		
+	</span>
+
+	@{
+		var classString = new CssBuilder("response-div flex flex-col items-center justify-center")
+			.AddClass("invisible-response", string.IsNullOrWhiteSpace(Response) && !Loading);
+	}
+	<div class="@classString">
+
+		<div class="h-[1px] w-[350px] my-4 bg-gray-200"></div>
+
+		<div class="max-w-200">
+			@if (Loading)
+			{
+				<div class="flex flex-row gap-1 items-center" style="opacity: 50%">
+					<LucideIcon Size="20" Name="sparkles" />
+					<p>
+						Konzultovanie s Hitchhikerom...
+					</p>
+				</div>
+			}
+			else
+			{
+				@Response
+			}
+		</div>
+	</div>
+
+</div>
+
+@code {
+
+
+	private string? Prompt { get; set; }
+
+	private IBrowserFile? UploadedFile { get; set; }
+
+	private string? ImageFileName { get; set; }
+
+	private string? ImageDataURL { get; set; }
+
+	private string? Response { get; set; }
+
+	private bool Loading { get; set; } = false;
+
+	private async Task UploadFiles(IBrowserFile? file)
+	{
+		UploadedFile = file;
+
+		var fileName = Path.GetFileName(file.Name);
+
+		// Get the configured base storage path and prepare the temp subfolder
+		var tempDirectory = @"C:\Temp";
+
+		if (!Directory.Exists(tempDirectory))
+		{
+			Directory.CreateDirectory(tempDirectory);
+		}
+
+		// Generate a unique temp file name
+		var tempFileName = $"{Guid.NewGuid()}{Path.GetExtension(fileName)}";
+
+		// Full path to the temp file
+		ImageFileName = Path.Combine(tempDirectory, tempFileName);
+
+		try
+		{
+			await using var stream = file.OpenReadStream(250_000_000); // ~250 MB limit
+
+			using var ms = new MemoryStream();
+			await stream.CopyToAsync(ms);
+
+			// Save to disk
+			await using (var fileStream = File.Create(ImageFileName))
+			{
+				ms.Position = 0;
+				await ms.CopyToAsync(fileStream);
+			}
+
+			// Convert to base64
+			var bytes = ms.ToArray();
+			var base64 = Convert.ToBase64String(bytes);
+			ImageDataURL = $"data:image/png;base64,{base64}";
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex);
+
+			// Reset temp state in case of error
+		}
+	}
+
+	private async Task SendPromptAsync()
+	{
+		if (string.IsNullOrWhiteSpace(Prompt)) return;
+
+		Loading = true;
+
+		var bytes = await File.ReadAllBytesAsync(Path.Combine(ImageFileName!));
+
+		var client = new ChatClient(model: "gpt-5", Configuration.GetValue<string>("OpenAIKey"));
+
+		var messages = new List<ChatMessage>
+		{
+			// User message composed of parts (text + image)
+			new UserChatMessage(
+				ChatMessageContentPart.CreateTextPart(Prompt),
+				ChatMessageContentPart.CreateTextPart("Taktiež nám v oddelenom odstavci popíš morfológiu tejto galaxie, jej typ, popíš jej galaktický warp."),
+				ChatMessageContentPart.CreateImagePart(BinaryData.FromBytes(bytes), "image/png")
+			)
+		};
+
+		ChatCompletion completion = await client.CompleteChatAsync(messages);
+
+		Loading = false;
+		Response = completion.Content.FirstOrDefault()?.Text;
+	}
+
+}

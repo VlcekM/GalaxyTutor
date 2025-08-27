@@ -1,0 +1,5 @@
+/* 1. Import Tailwind (v4 uses CSS-first imports) */
+@import "tailwindcss";
+
+/* 2. Optionally scan your Blazor/Razor files for content usage */
+@source "**/*.{razor,html}";
