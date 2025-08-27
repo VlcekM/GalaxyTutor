@@ -15,6 +15,7 @@
     <PackageReference Include="InfiniLore.Lucide" Version="0.33.541" />
     <PackageReference Include="LumexUI" Version="2.0.0" />
     <PackageReference Include="MudBlazor" Version="8.11.0" />
+    <PackageReference Include="MudBlazor.Markdown" Version="8.11.0" />
     <PackageReference Include="OpenAI" Version="2.3.0" />
   </ItemGroup>
 

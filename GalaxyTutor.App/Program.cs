@@ -1,5 +1,6 @@
 using GalaxyTutor.App.Components;
 using LumexUI.Extensions;
+using MudBlazor;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ builder.Configuration
 builder.Services
     .AddHttpClient()
     .AddMudServices()
+    .AddMudMarkdownServices()
     .AddLucideIcons()
     .AddLumexServices();
 

@@ -85,7 +85,7 @@
 			@if (Loading)
 			{
 				<div class="flex flex-row gap-1 items-center" style="opacity: 50%">
-					<LucideIcon Size="20" Name="sparkles" />
+					<LucideIcon Size="16" Name="sparkles" />
 					<p>
 						Konzultovanie s Hitchhikerom...
 					</p>
@@ -93,7 +93,7 @@
 			}
 			else
 			{
-				@Response
+				<MudMarkdown Value="@Response"/>
 			}
 		</div>
 	</div>
@@ -170,7 +170,10 @@
 
 		var bytes = await File.ReadAllBytesAsync(Path.Combine(ImageFileName!));
 
-		var client = new ChatClient(model: "gpt-5", Configuration.GetValue<string>("OpenAIKey"));
+		var model = Configuration.GetValue<string>("OpenAIModel") ?? "gpt-4o";
+		var key = Configuration.GetValue<string>("OpenAIKey");
+		
+		var client = new ChatClient(model, key);
 
 		var messages = new List<ChatMessage>
 		{
@@ -178,6 +181,7 @@
 			new UserChatMessage(
 				ChatMessageContentPart.CreateTextPart(Prompt),
 				ChatMessageContentPart.CreateTextPart("Taktiež nám v oddelenom odstavci popíš morfológiu tejto galaxie, jej typ, popíš jej galaktický warp."),
+				ChatMessageContentPart.CreateTextPart("Odpoved renderni v MarkDown formate."),
 				ChatMessageContentPart.CreateImagePart(BinaryData.FromBytes(bytes), "image/png")
 			)
 		};
