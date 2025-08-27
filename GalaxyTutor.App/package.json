@@ -1,0 +1,17 @@
+{
+  "name": "galaxytutor.app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i tailwind.input.css -o wwwroot/css/tailwind.output.css",
+    "watch:css": "npx @tailwindcss/cli -i tailwind.input.css -o wwwroot/css/tailwind.output.css --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.12",
+    "tailwindcss": "^4.1.12"
+  }
+}
