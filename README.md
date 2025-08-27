@@ -1,8 +1,8 @@
 # GalaxyTutor
 
-- Martin Vlček
-- Martin Matta
-- Barbora Kubalcová
+- [Martin Vlček](https://github.com/VlcekM)
+- [Martin Matta](https://github.com/Arzaknim)
+- [Barbora Kubalcová](https://github.com/BarboraKubalcova)
 
 ### AI asistent pre popisovanie galaxii
 
